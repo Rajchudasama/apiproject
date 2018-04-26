@@ -1,0 +1,53 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+@Html.DropDownList("cryptos",null, new { id = "cryptos" })
+<input type="number" name="unit" min="1" id="unit" value="1"/>
+<div id="data"></div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        jQuery.ajaxSetup({ async: false });
+        var cryptovalue = $("#cryptos").val();
+        var unit = $("#unit").val();
+        $.get("/Home/getPrice", {
+            crypto: cryptovalue,
+            
+        }, function (data) {
+            $('#data').empty();
+            $('#data').html(data);
+        });
+        $("#cryptos").change(function () {
+            var cryptovalue = $(this).val();
+            $.get("/Home/getPrice", {
+                crypto: cryptovalue,
+
+            }, function (data) {
+                $('#data').empty();
+                $('#data').html(data);
+            });
+        });
+        $("#unit").change(function () {
+            var unit = $("#unit").val();
+            unitPrice(unit);
+        })
+        $(document).ajaxComplete(function () {
+            unitPrice(unit);
+        })
+
+        //console.log(unit);
+        function unitPrice(unit) {
+
+            $(".price").each(function (e) {
+                var value = $(this).text();
+                console.log(unit);
+                $(this).text(value * unit);
+            });
+        }
+
+    })
+</script>
